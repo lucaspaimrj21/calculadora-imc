@@ -1,38 +1,39 @@
-// variáveis
+import { modal } from "./modal.js"
+import { alertError } from "./alert-error.js";
+import { notANumber, calculateIMC } from "./utils.js";
+
 
 const form = document.querySelector('form');
 const inputWeight = document.querySelector('#weight')
 const inputHeight = document.querySelector('#height')
 
-const modalWrapper = document.querySelector('.modal-wrapper')
-const modalMessage = document.querySelector('.modal .title span')
-const modalBtnClose = document.querySelector('.modal button.close')
+inputWeight.oninput = () => alertError.close()
+inputHeight.oninput = () => alertError.close()
 
-// 3 maneiras de criar e atribuir função a um evento
-
-// form.onsubmit = () => {}
-
-// form.onsubmit = handleSubmit
-// function handleSubmit() {}
-
-form.onsubmit = function(event) {
+form.onsubmit = (event) => {
     event.preventDefault()
 
     const weight = inputWeight.value 
     const height = inputHeight.value
 
-    const result = imc(weight, height)
-    const message = `Seu IMC é de ${result}`
+    const weightOrHeightIsNotANumber = notANumber(weight) || notANumber(height)
 
-    modalMessage.innerText = message
-    modalWrapper.classList.add('open')
+    if(weightOrHeightIsNotANumber) {
+        alertError.open()
+        return;
+    }
+
+    alertError.close()
+
+    const result = calculateIMC(weight, height)
+    displayResultMessage(result)
+    
 }
 
-modalBtnClose.onclick = () => modalWrapper.classList.remove('open')
+function displayResultMessage(result) {
+    const message = `Seu IMC é de ${result}`
 
-
-
-function imc(weight, height) {
-    return (weight / ((height / 100) ** 2)).toFixed(2)
+    modal.message.innerText = message
+    modal.open()
 }
 
